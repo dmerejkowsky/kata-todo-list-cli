@@ -1,20 +1,37 @@
+import pickle
+from pathlib import Path
+
+DB_PATH = Path("tasks.pickle")
+
+
 class Task:
     def __init__(self, *, number, description, done):
         self.number = number
         self.description = description
         self.done = done
 
-    def __str__(self):
+    def __repr__(self):
         box = "[x]" if self.done else "[ ]"
         return f"{self.number} {box} {self.description}"
 
-    def __repr__(self):
-        return f"Task<#{self.number} -{self.description} - done: {self.done}>"
-
 
 class TaskManager:
-    def __init__(self):
-        self.tasks = []
+    def __init__(self, db_path=Path("tasks.pickle"), clear=False):
+        self.db_path = db_path
+        self.load_tasks()
+        if clear:
+            self.tasks = []
+
+    def load_tasks(self):
+        if self.db_path.exists():
+            with self.db_path.open("rb") as source:
+                self.tasks = pickle.load(source)
+        else:
+            self.tasks = []
+
+    def save_tasks(self):
+        with self.db_path.open("wb") as destination:
+            pickle.dump(self.tasks, destination)
 
     def add(self, description):
         number = len(self.tasks) + 1
@@ -38,7 +55,7 @@ class TaskManager:
                 return task
         print("No such task")
 
-    def __str__(self):
+    def __repr__(self):
         if not self.tasks:
             return "Nothing to be done yet"
         return "\n".join(str(t) for t in self.tasks)
