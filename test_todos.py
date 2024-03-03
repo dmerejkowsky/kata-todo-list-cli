@@ -43,18 +43,17 @@ def test_task_manager_has_no_tasks_by_default():
     assert task_manager.tasks == []
 
 
-def test_execute_add():
+def test_add():
     task_manager = TaskManager()
-    add_command = {"action": "add", "description": "new task"}
 
-    task_manager.execute(add_command)
+    task_manager.add("new task")
 
     (actual,) = task_manager.tasks
     assert actual.description == "new task"
     assert actual.number == 1
 
 
-def test_execute_update():
+def test_update():
     """Scenario:
 
     * Create a TaskManager with one task('task one') that is not done
@@ -63,15 +62,14 @@ def test_execute_update():
     """
     task_manager = TaskManager()
     task_manager.tasks = [Task(number=1, description="task one", done=False)]
-    update_command = {"action": "update", "number": 1, "done": True}
 
-    task_manager.execute(update_command)
+    task_manager.update(number=1, done=True)
 
     (actual,) = task_manager.tasks
     assert actual.done is True
 
 
-def test_execute_delete():
+def test_delete():
     """Scenario:
 
     * Create a TaskManager with one task('task one') that is not done
@@ -83,9 +81,8 @@ def test_execute_delete():
     """
     task_manager = TaskManager()
     task_manager.tasks = [Task(number=1, description="task one", done=False)]
-    delete_command = {"action": "delete", "number": 1}
 
-    task_manager.execute(delete_command)
+    task_manager.delete(1)
 
     assert not task_manager.tasks
 
@@ -93,10 +90,10 @@ def test_execute_delete():
 def test_delete_non_existing_task():
     task_manager = TaskManager()
     task_manager.tasks = [Task(number=1, description="task one", done=False)]
-    task_manager.execute_delete({"action": "delete", "number": 2})
+    task_manager.delete(2)
 
 
 def test_update_non_existing_task():
     task_manager = TaskManager()
     task_manager.tasks = [Task(number=1, description="task one", done=False)]
-    task_manager.execute_update({"action": "upuadet", "number": 2, "done": True})
+    task_manager.update(number=2, done=True)
